@@ -5,7 +5,7 @@
 //  Created by Noam Mizrachi on 10/06/2019.
 //  Copyright © 2019 Noam Mizrachi. All rights reserved.
 //
-/*  ----------------   Comments by Noam ----------------
+/*  -----------------   Comments by Noam -----------------
  
 1. '@IBOutlet' means that this property is connected to an interface builder outlet that is, it is connected to some user interface object.
  
@@ -52,7 +52,7 @@
  15. If the table is in 'editing mode' the function that executes when the '+' button is pressed do nothin. That is for disabling the option to add new note when the 'edit' button is pressed.
  
  
-*/ // ---------------- End of Noam comments ----------------
+*/ // ----------------- End of Noam comments -----------------
 
 
 import UIKit
