@@ -54,7 +54,7 @@
  16. func 'save' writes the data from the 'data' array to a file in a locatoin on the devise that is spesified by URL whenever we change data.
     The data array is wrapped by NSArray that adds the options to read and write the data in the array to a file.
     In the 'try' statement we are writing the data in the 'data' array to a file in order to save it.
-    We call this function when note is added (in 'addNote' func) and when a note is deleted (in 'tableView' with commit).
+    We call this function when a note is deleted (in 'tableView' with commit).
  
  17. func 'load' makes sure that there is data to load and that its the right type of data.
     The data array then is being loaded with the data that is saved in the given URL path.
@@ -69,6 +69,20 @@
     We are using the 'UITableViewDelegate' method tableView with 'didSelectRowAt' that tells the delegate that the specifide row is now selected.
     Now when we select a row on the app we will see in the output area on xcode the name of the row.
     This process is for responding to a selection in a table view - we tell the table to set it's delegate to our class (self) and we handle the mentioned method.
+ 
+ 20. We added the third view controller to be the new screen when a row is selected in the table view - so when we select a note (row) we will be taken to the screen that will show us the full text of the note.
+    We will be able to edit our note in that screen.
+    When we go back the note authomaticly be saved.
+    We added to this view controller a 'text view' for multiple lines of text. Again I added constraints to the text view by selecting it, pin it to the edges of the screen of the main view, and pressing: 'cmd + shift + opt + =' in order for the content to streach and shrink in the correct dimantions of the Apple devise.
+    We gave this screen a title 'Note' in the attribute inspector.
+    In video 21 he shows how to create the transition (segue) between the 2 view controllers - from the first view controller 'view controller' object that is located at the top left of the view controller bar we drag to the seconds view controller main screen (In the text view) and then select 'show'.
+    We selected the segue (arrow between 2 view controller that was created and gave it an identifier 'detail').
+    * Now the new view is a 'childe' of the main view controller, and thus it have a title bar and a 'Back' button!
+ 
+ 21. We are creating a transition from this view to the 'detail' view. The identifier is the string 'detail' because that is the identifier of the segue between those two views.
+    We put the same row (for performing the segue) in the func 'addNote' because we also want it to happen when we create new note.
+ 
+ 
  
  
 */ // ------------------ End of Noam comments ------------------
@@ -116,7 +130,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         data.insert(name, at: 0)
         let indexPath: IndexPath = IndexPath(row: 0, section: 0) // always the top row
         table.insertRows(at: [indexPath], with: .automatic) // new row and an animation for inserting it
-        save() // comment #16
+        self.performSegue(withIdentifier: "detail", sender: nil) // Comment #21
     }
 
     // Return the number of rows for the table:
@@ -146,7 +160,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     // Comment 19 - this method handle selecting the row
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("\(data[indexPath.row])")
+       self.performSegue(withIdentifier: "detail", sender: nil) // Comment #21
     }
     
     // Comment #16
