@@ -51,9 +51,18 @@
  
  15. If the table is in 'editing mode' the function that executes when the '+' button is pressed do nothin. That is for disabling the option to add new note when the 'edit' button is pressed.
  
- 16. func 'save' saves data to the presistent storage whenever we change data.
+ 16. func 'save' writes the data from the 'data' array to a file in a locatoin on the devise that is spesified by URL whenever we change data.
+    The data array is wrapped by NSArray that adds the options to read and write the data in the array to a file.
+    In the 'try' statement we are writing the data in the 'data' array to a file in order to save it.
+    We call this function when note is added (in 'addNote' func) and when a note is deleted (in 'tableView' with commit).
  
  17. func 'load' makes sure that there is data to load and that its the right type of data.
+    The data array then is being loaded with the data that is saved in the given URL path.
+    Data is loaded when the app launches because we call this function inside the function 'viewDidLoad'.
+ 
+ 18. 'fileURL' if of type URL that is a referance to the file we want to save (that contains the data from the 'data' array).
+    'baseURL' is of type URL - we are getting the file URL for the documents directory.
+    Next step - we give our 'fileURL' a path component called 'notes.txt'.
  
  
 */ // ------------------ End of Noam comments ------------------
@@ -67,6 +76,7 @@ class ViewController: UIViewController, UITableViewDataSource {
     
     @IBOutlet weak var table: UITableView!  // Comment #1
     var data: [String] = []
+    var fileURL: URL! // Comment #18
     
 // Methodes
     
@@ -82,6 +92,10 @@ class ViewController: UIViewController, UITableViewDataSource {
         self.navigationItem.rightBarButtonItem = addButton // Comment #11
         
         self.navigationItem.leftBarButtonItem = editButtonItem // Comment #12
+        
+        let baseURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false) // Comment #18
+        fileURL = baseURL.appendingPathComponent("notes.txt") // Comment #18
+        
         load() // comment #17
     }
     
@@ -124,12 +138,17 @@ class ViewController: UIViewController, UITableViewDataSource {
     
     // comment #16
     func save() {
-        UserDefaults.standard.set(data, forKey: "notes")
+        let a = NSArray(array: data) //NSArray wraps the array and adds functionality like writing and reading from a file
+        do {
+            try a.write(to: fileURL) // Comment #18
+        } catch  {
+            print("Error writing to file")
+        }
     }
     
     // comment #17
     func load() {
-        if let loadedData: [String] = UserDefaults.standard.value(forKeyPath: "notes") as? [String] { // if data not nil and and typecast works
+        if let loadedData: [String] = NSArray(contentsOf: fileURL) as? [String] { // if data not nil and and typecast works
             data = loadedData
             table.reloadData()
         }
