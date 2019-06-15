@@ -51,16 +51,13 @@
  
  15. If the table is in 'editing mode' the function that executes when the '+' button is pressed do nothin. That is for disabling the option to add new note when the 'edit' button is pressed.
  
- 16. func 'save' writes the data from the 'data' array to a file in a locatoin on the devise that is spesified by URL whenever we change data.
-    The data array is wrapped by NSArray that adds the options to read and write the data in the array to a file.
-    In the 'try' statement we are writing the data in the 'data' array to a file in order to save it.
-    We call this function when a note is deleted (in 'tableView' with commit).
+ 16. func 'save' writes the data from the 'data' array to the persistent storage in the device and gine it a keyword "notes" for locating it later - like kind of marking.
  
  17. func 'load' makes sure that there is data to load and that its the right type of data.
-    The data array then is being loaded with the data that is saved in the given URL path.
+    The data array then is being loaded with the data that is saved in the persistent storage with the keyword "notes".
     Data is loaded when the app launches because we call this function inside the function 'viewDidLoad'.
  
- 18. 'fileURL' if of type URL that is a referance to the file we want to save (that contains the data from the 'data' array).
+ 18. We dont use it!!! : 'fileURL' if of type URL that is a referance to the file we want to save (that contains the data from the 'data' array).
     'baseURL' is of type URL - we are getting the file URL for the documents directory.
     Next step - we give our 'fileURL' a path component called 'notes.txt' that is, we are passing the name of the file as a string.
  
@@ -82,6 +79,15 @@
  21. We are creating a transition from this main controller view to the 'Note' view. The identifier of the segue is the string 'detail' because that is the identifier of the segue between those two views.
     We put the same row (for performing the segue) in the func 'addNote' because we also want it to happen when we create new note.
  
+ 22. Now when the 'DetailViewController' class is created for the 'Note' scene, we need to pass it an information regarding the row selected, that is, to somehow connect those to classes.
+    We will handle the method 'prepare' that will provide this current class information about the view controller that is about to appear when the segue is activated, that is, the 'Note' view controller.
+    In this 'prepare' method we are sending data to the DetailViewController grough the 'prepare for segue' method.
+    We create a 'detailView' constant to be the view controller that returns when performing the segue, that is, our 'DetailViewController'.
+ 
+ 23. 'newRowText' will store the text that was created in the detail view controller.
+ 
+ 24. The func 'viewWillAppear' is like 'viewDidLoad' but not when we initialize the app, but when we return to this controller.
+ 
  
  
  
@@ -96,7 +102,10 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     @IBOutlet weak var table: UITableView!  // Comment #1
     var data: [String] = []
-    var fileURL: URL! // Comment #18
+    var selectedRow: Int = -1 // Each time we got a different selected row index.
+    var newRowText: String = "" // Comment #23
+    // var fileURL: URL! // Comment #18 - we dont use it
+    
     
 // Methodes
     
@@ -109,16 +118,31 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         
         self.title = "Noam Notes" // Comment #7
         self.navigationController?.navigationBar.prefersLargeTitles = true // Comment #8
+        self.navigationItem.largeTitleDisplayMode = .always // Main view controller always show large titles
         
         let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addNote)) // Comment #10
         self.navigationItem.rightBarButtonItem = addButton // Comment #11
         
         self.navigationItem.leftBarButtonItem = editButtonItem // Comment #12
         
-        let baseURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false) // Comment #18
-        fileURL = baseURL.appendingPathComponent("notes.txt") // Comment #18
+        // let baseURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false) // Comment #18 - we dont use it
+        // fileURL = baseURL.appendingPathComponent("notes.txt") // Comment #18 - we dont use it
         
         load() // comment #17
+    }
+    
+    // Comment #24
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if selectedRow == -1 {
+            return
+        }
+        data[selectedRow] = newRowText // Adjusting the data
+        if newRowText == "" { // making sure that it is not empty for deleting a row with no content
+            data.remove(at: selectedRow)
+        }
+        table.reloadData()
+        save()
     }
     
     // Comment #9
@@ -126,11 +150,13 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         if table.isEditing {  // Comment #15
             return
         }
-        let name: String = "Item \(data.count + 1)"
+        let name: String = ""
         data.insert(name, at: 0)
         let indexPath: IndexPath = IndexPath(row: 0, section: 0) // always the top row
         table.insertRows(at: [indexPath], with: .automatic) // new row and an animation for inserting it
+        table.selectRow(at: indexPath, animated: true, scrollPosition: .none) // Having a selected row
         self.performSegue(withIdentifier: "detail", sender: nil) // Comment #21
+        //save()
     }
 
     // Return the number of rows for the table: (required method of UITableViewDataSource)
@@ -163,19 +189,22 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
        self.performSegue(withIdentifier: "detail", sender: nil) // Comment #21
     }
     
+    // Comment #22  -  This method executes wehn segue is performed
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let detailView: DetailViewController = segue.destination as! DetailViewController
+        selectedRow = table.indexPathForSelectedRow!.row
+        detailView.masterView = self // Setting our detailView's masterView property to be self
+        detailView.setText(t: data[selectedRow])
+    }
+    
     // Comment #16
     func save() {
-        let a = NSArray(array: data) //NSArray wraps the array and adds functionality like writing and reading from a file
-        do {
-            try a.write(to: fileURL) // Comment #18
-        } catch  {
-            print("Error writing to file")
-        }
+        UserDefaults.standard.set(data, forKey: "notes")
     }
     
     // comment #17
     func load() {
-        if let loadedData: [String] = NSArray(contentsOf: fileURL) as? [String] { // if data not nil and and typecast works
+        if let loadedData: [String] = UserDefaults.standard.value(forKey: "notes") as? [String] { // if data not nil and and typecast works
             data = loadedData
             table.reloadData()
         }
