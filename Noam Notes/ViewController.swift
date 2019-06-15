@@ -62,7 +62,13 @@
  
  18. 'fileURL' if of type URL that is a referance to the file we want to save (that contains the data from the 'data' array).
     'baseURL' is of type URL - we are getting the file URL for the documents directory.
-    Next step - we give our 'fileURL' a path component called 'notes.txt'.
+    Next step - we give our 'fileURL' a path component called 'notes.txt' that is, we are passing the name of the file as a string.
+ 
+ 19. We need to respond to a selected row in the table view.
+    First we connect our table to a delegate (dataSource handles the data in the table, while the Delegate handles interactivity). Again, we need fo add inheritance from 'UITableViewDelegate'.
+    We are using the 'UITableViewDelegate' method tableView with 'didSelectRowAt' that tells the delegate that the specifide row is now selected.
+    Now when we select a row on the app we will see in the output area on xcode the name of the row.
+    This process is for responding to a selection in a table view - we tell the table to set it's delegate to our class (self) and we handle the mentioned method.
  
  
 */ // ------------------ End of Noam comments ------------------
@@ -70,7 +76,7 @@
 
 import UIKit
 
-class ViewController: UIViewController, UITableViewDataSource {
+class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
 // Properties
     
@@ -85,6 +91,8 @@ class ViewController: UIViewController, UITableViewDataSource {
         // Do any additional setup after loading the view.
         
         table.dataSource = self  // Comment #2
+        table.delegate = self // Comment #19
+        
         self.title = "Noam Notes" // Comment #7
         self.navigationController?.navigationBar.prefersLargeTitles = true // Comment #8
         
@@ -133,10 +141,15 @@ class ViewController: UIViewController, UITableViewDataSource {
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         data.remove(at: indexPath.row) // remove the data from the data array,
         table.deleteRows(at: [indexPath], with: .fade) // remove the row from the table with 'fade' animation
-        save() // comment #16
+        save() // Comment #16
     }
     
-    // comment #16
+    // Comment 19 - this method handle selecting the row
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print("\(data[indexPath.row])")
+    }
+    
+    // Comment #16
     func save() {
         let a = NSArray(array: data) //NSArray wraps the array and adds functionality like writing and reading from a file
         do {
