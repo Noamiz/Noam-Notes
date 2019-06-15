@@ -11,7 +11,7 @@
  
  2. To provide data to a Table View we need to set the table's dataSource to an object (self) that implements 'UITableViewDataSource' protocol.
     That is why we added the 'UITableViewDataSource' to our ViewController class ingeritance and we are implementing it's 2 'Required' methods: 'func tableView' and then returning self.
- The class 'UITavleViewDataSource' is the class that provide the data to the Table view. So we associate aour table with the 'UITavleViewDataSource' class.
+    The class 'UITavleViewDataSource' is the class that provide the data to the Table view. So we associate aour table with the 'UITavleViewDataSource' class.
  
  3. 'return data.count ' will return the number of rows in tne data array we created.
  
@@ -79,7 +79,7 @@
     We selected the segue (arrow between 2 view controller that was created and gave it an identifier 'detail').
     * Now the new view is a 'childe' of the main view controller, and thus it have a title bar and a 'Back' button!
  
- 21. We are creating a transition from this view to the 'detail' view. The identifier is the string 'detail' because that is the identifier of the segue between those two views.
+ 21. We are creating a transition from this main controller view to the 'Note' view. The identifier of the segue is the string 'detail' because that is the identifier of the segue between those two views.
     We put the same row (for performing the segue) in the func 'addNote' because we also want it to happen when we create new note.
  
  
@@ -133,12 +133,12 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         self.performSegue(withIdentifier: "detail", sender: nil) // Comment #21
     }
 
-    // Return the number of rows for the table:
+    // Return the number of rows for the table: (required method of UITableViewDataSource)
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return data.count  // Comment #3
     }
     
-    // Provide a cell object for each row - creating a cell, put the appropriate text inside it and return it:
+    // Provide a cell object for each row - creating a cell, put the appropriate text inside it and return it: (required method of UITableViewDataSource)
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: UITableViewCell = tableView.dequeueReusableCell(withIdentifier: "cell")! // Comment #4
         cell.textLabel?.text = data[indexPath.row] // Comment #5

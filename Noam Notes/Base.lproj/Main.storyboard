@@ -50,12 +50,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-804" y="-206"/>
+            <point key="canvasLocation" x="-662" y="-206"/>
         </scene>
         <!--Note-->
         <scene sceneID="JM9-5j-wDR">
             <objects>
-                <viewController title="Note" id="D8M-z8-N0w" sceneMemberID="viewController">
+                <viewController title="Note" id="D8M-z8-N0w" customClass="DetailViewController" customModule="Noam_Notes" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="QiH-7o-Ylb">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -77,10 +77,13 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="NRx-jY-iaT"/>
                     </view>
+                    <connections>
+                        <outlet property="textView" destination="tDe-hs-ycg" id="eKB-uQ-8BR"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Cba-EB-kZd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-6" y="-206"/>
+            <point key="canvasLocation" x="34" y="-206"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="QAY-da-nY1">
@@ -98,7 +101,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="d6k-Mi-v5q" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1807" y="-206"/>
+            <point key="canvasLocation" x="-1391" y="-206"/>
         </scene>
     </scenes>
 </document>
