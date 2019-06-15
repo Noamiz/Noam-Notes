@@ -7,7 +7,7 @@
 //
 /*  ------------------   Comments by Noam ------------------
  
-1. '@IBOutlet' means that this property is connected to an interface builder outlet that is, it is connected to some user interface object.
+1. '@IBOutlet' means that this property is connected to an interface builder outlet that is, it is connected to some user interface object. We created it by adding Table View object to the main.storyboard and then right-clicked-draged it from there to the VewController.swift file as a property - and save as 'table'.
  
  2. To provide data to a Table View we need to set the table's dataSource to an object (self) that implements 'UITableViewDataSource' protocol.
     That is why we added the 'UITableViewDataSource' to our ViewController class ingeritance and we are implementing it's 2 'Required' methods: 'func tableView' and then returning self.
@@ -51,6 +51,10 @@
  
  15. If the table is in 'editing mode' the function that executes when the '+' button is pressed do nothin. That is for disabling the option to add new note when the 'edit' button is pressed.
  
+ 16. func 'save' saves data to the presistent storage whenever we change data.
+ 
+ 17. func 'load' makes sure that there is data to load and that its the right type of data.
+ 
  
 */ // ------------------ End of Noam comments ------------------
 
@@ -62,7 +66,7 @@ class ViewController: UIViewController, UITableViewDataSource {
 // Properties
     
     @IBOutlet weak var table: UITableView!  // Comment #1
-    var data: [String] = ["Item 1", "Item 2", "Item 3"]
+    var data: [String] = []
     
 // Methodes
     
@@ -73,10 +77,12 @@ class ViewController: UIViewController, UITableViewDataSource {
         table.dataSource = self  // Comment #2
         self.title = "Noam Notes" // Comment #7
         self.navigationController?.navigationBar.prefersLargeTitles = true // Comment #8
+        
         let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addNote)) // Comment #10
         self.navigationItem.rightBarButtonItem = addButton // Comment #11
         
         self.navigationItem.leftBarButtonItem = editButtonItem // Comment #12
+        load() // comment #17
     }
     
     // Comment #9
@@ -86,8 +92,9 @@ class ViewController: UIViewController, UITableViewDataSource {
         }
         let name: String = "Item \(data.count + 1)"
         data.insert(name, at: 0)
-        let indexPath: IndexPath = IndexPath(row: 0, section: 0)
+        let indexPath: IndexPath = IndexPath(row: 0, section: 0) // always the top row
         table.insertRows(at: [indexPath], with: .automatic) // new row and an animation for inserting it
+        save() // comment #16
     }
 
     // Return the number of rows for the table:
@@ -104,7 +111,7 @@ class ViewController: UIViewController, UITableViewDataSource {
     
     // Comment #13 - executes when 'Edit' button is pressed
     override func setEditing(_ editing: Bool, animated: Bool) {
-        super.setEditing(editing, animated: animated) // caling super class method first
+        super.setEditing(editing, animated: animated) // calling super class method first
         table.setEditing(editing, animated: animated) // puting the table in editing mode
     }
     
@@ -112,6 +119,20 @@ class ViewController: UIViewController, UITableViewDataSource {
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         data.remove(at: indexPath.row) // remove the data from the data array,
         table.deleteRows(at: [indexPath], with: .fade) // remove the row from the table with 'fade' animation
+        save() // comment #16
+    }
+    
+    // comment #16
+    func save() {
+        UserDefaults.standard.set(data, forKey: "notes")
+    }
+    
+    // comment #17
+    func load() {
+        if let loadedData: [String] = UserDefaults.standard.value(forKeyPath: "notes") as? [String] { // if data not nil and and typecast works
+            data = loadedData
+            table.reloadData()
+        }
     }
 
 }
