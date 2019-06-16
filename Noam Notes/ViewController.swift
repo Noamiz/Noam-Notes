@@ -184,7 +184,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         save() // Comment #16
     }
     
-    // Comment 19 - this method handle selecting the row
+    // Comment 19 - this method handle selecting the row - and performes a SEGUE!!
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
        self.performSegue(withIdentifier: "detail", sender: nil) // Comment #21
     }
