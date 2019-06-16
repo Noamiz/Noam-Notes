@@ -22,6 +22,7 @@
  5. The func viewWillDisappear is for when the detailView is on is way our, that is, returning to the master view, we want to modify (main) view controller on the way in it, using that initial data.
  
  6. Every time view appears, when we call this method it authomaticly brings up the software keyboard to pop up.
+    Generally, this method is executes when this view appears.
  
  
  */ // ------------------------  End Comments  ------------------------
